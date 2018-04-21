@@ -2,6 +2,37 @@ import { expect } from 'chai';
 import request from 'supertest';
 import server from '../../../lib/index'
 
+const models = require('../../../models');
+
+const generateUser = () => {
+  return new Promise((resolve, reject) => {
+    models.User.create(
+      { 
+        username: 'testUser', 
+        first_name: 'first_name', 
+        last_name: 'last_nae'
+      }
+    ).then((user) => {
+      resolve(user.id);
+    })
+  })
+}
+
+const generateTask = (userId) => {
+  return new Promise((resolve, reject) => {
+    models.Task.create(
+      {
+        "name":"My task",
+        "description" : "Description of task", 
+        "date_time" : "2016-05-25 14:25:00",
+        "UserId": userId
+      })
+    .then((task) => {
+      resolve({taskId: task.id, userId} );
+    })
+  })
+}
+
 describe('Health check route', () => {
   it('returns ok', () => {
     request(server).get('/__health').end((err, res) => {
@@ -12,11 +43,6 @@ describe('Health check route', () => {
 });
 
 describe('User routes', () => {
-  let models;
-
-  beforeEach(() => {
-    models = require('../../../models');
-  });
 
   it('returns a create error if invalid user params sent', () => {
     request(server)
@@ -39,15 +65,10 @@ describe('User routes', () => {
   })
 
   it('updates a user', (done) => {
-    models.User.create(
-      { 
-        username: 'testUser', 
-        first_name: 'first_name', 
-        last_name: 'last_nae'
-      }
-    ).then((user) => {
+    generateUser()
+    .then((userId) => {
       request(server)
-        .put(`/api/users/${user.id}`)
+        .put(`/api/users/${userId}`)
         .type('form')
         .send({username: 'testUserUpdate', first_name: 'first'})
         .then((res) => {
@@ -69,20 +90,17 @@ describe('User routes', () => {
 
   it('gets user info', (done) => {
     //ensure at least one user will be returned
-    models.User.create(
-      { 
-        username: 'testUser', 
-        first_name: 'first_name_something_unique', 
-        last_name: 'last_nae'
-      }
-    ).then((user) => {
+    generateUser()
+    .then((userId) => {
       request(server)
-        .get(`/api/users/${user.id}`)
+        .get(`/api/users/${userId}`)
         .then(res => {
-          expect(res.body.first_name).to.eql('first_name_something_unique');
+          
+          expect(res.body.first_name).to.eql('first_name');
           done();
         })
         .catch(err => {
+          console.log(err);
           expect(err).to.eql(null); // indicative of failure
           done();
         })
@@ -94,15 +112,10 @@ describe('User routes', () => {
   })
   
   it('deletes a user', (done) => {
-    models.User.create(
-      { 
-        username: 'testUser', 
-        first_name: 'first_name', 
-        last_name: 'last_nae'
-      }
-    ).then((user) => {
+    generateUser()
+    .then((userId) => {
       request(server)
-        .delete(`/api/users/${user.id}`)
+        .delete(`/api/users/${userId}`)
         .then((res) => {
           // 1 if successful (number of rows deleted)
           expect(res.body).to.eql(1);
@@ -135,11 +148,6 @@ describe('User routes', () => {
 });
 
 describe('Task routes', () => {
-  let models;
-
-  beforeEach(() => {
-    models = require('../../../models');
-  });
 
   it('returns a create error if invalid user params sent', () => {
     request(server)
@@ -152,15 +160,10 @@ describe('Task routes', () => {
   })
 
   it('creates a task', (done) => {
-    models.User.create(
-      { 
-        username: 'testUser', 
-        first_name: 'first_name_something_unique', 
-        last_name: 'last_nae'
-      }
-    ).then((user) => {
+    generateUser()
+    .then((userId) => {
       request(server)
-        .post(`/api/users/${user.id}/tasks`)
+        .post(`/api/users/${userId}/tasks`)
         .send({
           "name":"My task",
           "description" : "Description of task", 
@@ -184,109 +187,61 @@ describe('Task routes', () => {
   })
   
   it('updates a task', (done) => {
-    models.User.create(
-      { 
-        username: 'testUser', 
-        first_name: 'first_name', 
-        last_name: 'last_nae'
-      }
-    ).then((user) => {
-      models.Task.create(
-        {
-          "name":"My task",
-          "description" : "Description of task", 
-          "date_time" : "2016-05-25 14:25:00",
-          "UserId": user.id
-        })
-        .then((task) => {
-          request(server)
-            .put(`/api/users/${user.id}/tasks/${task.id}`)
-            .type('form')
-            .send({name:"My updated task"})
-            .then((res) => {
-              // 1 if successful (number of rows updated)
-              expect(res.body).to.eql(1);
-              done();
-            })
-            .catch(err => {
-              console.log(err);
-              expect(err).to.eql(null); // indicative of failure
-              done();
-            })
-        })
-        .catch(err => {
-          console.log(err);
-          expect(err).to.eql(null); // indicative of failure
-          done();
-        })
-    })
-    .catch(err => {
-      console.log(err);
-      expect(0).to.eql(1); // indicative of failure
-      done();
-    })
+    generateUser()
+      .then(generateTask)  
+      .then((taskResponse) => {
+        request(server)
+          .put(`/api/users/${taskResponse.userId}/tasks/${taskResponse.taskId}`)
+          .type('form')
+          .send({name:"My updated task"})
+          .then((res) => {
+            // 1 if successful (number of rows updated)
+            expect(res.body).to.eql(1);
+            done();
+          })
+          .catch(err => {
+            expect(err).to.eql(null); // indicative of failure
+            done();
+          })
+      })
+      .catch(err => {
+        console.log(err);
+        expect(0).to.eql(1); // indicative of failure
+        done();
+      })
   });
 
   it('deletes a task', (done) => {
-    models.User.create(
-      { 
-        username: 'testUser', 
-        first_name: 'first_name', 
-        last_name: 'last_nae'
-      }
-    ).then((user) => {
-      models.Task.create(
-        {
-          "name":"My task",
-          "description" : "Description of task", 
-          "date_time" : "2016-05-25 14:25:00",
-          "UserId": user.id
+    generateUser()
+      .then(generateTask)  
+      .then((taskResponse) => {
+        request(server)
+          .delete(`/api/users/${taskResponse.userId}/tasks/${taskResponse.taskId}`)
+          .then((res) => {
+            // 1 if successful (number of rows deleted)
+            expect(res.body).to.eql(1);
+            done();
+          })
+          .catch(err => {
+            console.log(err);
+            expect(err).to.eql(null); // indicative of failure
+            done();
+          })
         })
-        .then((task) => {
-          request(server)
-            .delete(`/api/users/${user.id}/tasks/${task.id}`)
-            .then((res) => {
-              // 1 if successful (number of rows deleted)
-              expect(res.body).to.eql(1);
-              done();
-            })
-            .catch(err => {
-              console.log(err);
-              expect(err).to.eql(null); // indicative of failure
-              done();
-            })
-        })
-        .catch(err => {
-          console.log(err);
-          expect(err).to.eql(null); // indicative of failure
-          done();
-        })
-    })
-    .catch(err => {
-      console.log(err);
-      expect(0).to.eql(1); // indicative of failure
-      done();
-    })
+      
+      .catch(err => {
+        console.log(err);
+        expect(0).to.eql(1); // indicative of failure
+        done();
+      })
   });
 
   it('gets task details', (done) => {
-    models.User.create(
-      { 
-        username: 'testUser', 
-        first_name: 'first_name', 
-        last_name: 'last_nae'
-      }
-    ).then((user) => {
-      models.Task.create(
-        {
-          "name":"My task",
-          "description" : "Description of task", 
-          "date_time" : "2016-05-25 14:25:00",
-          "UserId": user.id
-        })
-        .then((task) => {
+    generateUser()
+      .then(generateTask)  
+      .then((taskResponse) => {
           request(server)
-            .get(`/api/users/${user.id}/tasks/${task.id}`)
+            .get(`/api/users/${taskResponse.userId}/tasks/${taskResponse.taskId}`)
             .then((res) => {
               // 1 if successful (number of rows updated)
               expect(res.body.description).to.eql("Description of task");
@@ -298,62 +253,37 @@ describe('Task routes', () => {
               done();
             })
         })
-        .catch(err => {
-          console.log(err);
-          expect(err).to.eql(null); // indicative of failure
-          done();
-        })
-    })
-    .catch(err => {
-      console.log(err);
-      expect(0).to.eql(1); // indicative of failure
-      done();
-    })
+      .catch(err => {
+        console.log(err);
+        expect(0).to.eql(1); // indicative of failure
+        done();
+      });
   });
 
   it('gets all task details for user', (done) => {
-    models.User.create(
-      { 
-        username: 'testUser', 
-        first_name: 'first_name', 
-        last_name: 'last_nae'
-      }
-    ).then((user) => {
-      models.Task.create(
-        {
-          "name":"My task",
-          "description" : "Description of task", 
-          "date_time" : "2016-05-25 14:25:00",
-          "UserId": user.id
-        })
-        .then(task => {
-          models.Task.create(
-            {
-              "name":"My task2",
-              "description" : "Description of task", 
-              "date_time" : "2016-05-25 14:25:00",
-              "UserId": user.id
-            })
-            .then(task => {
-              request(server)
-                .get(`/api/users/${user.id}/tasks`)
-                .then((res) => {
-                  // 1 if successful (number of rows updated)
-                  expect(res.body.length).to.eql(2);
-                  done();
-                })
-                .catch(err => {
-                  console.log(err);
-                  expect(err).to.eql(null); // indicative of failure
-                  done();
-                })
-            })
-            .catch(err => {
-              console.log(err);
-              expect(err).to.eql(null); // indicative of failure
-              done();
-            })
-        })
+    generateUser()
+      .then(generateTask)  
+      .then((taskResponse) => {
+        generateTask(taskResponse.userId)
+          .then(taskResponse2 => {
+            request(server)
+              .get(`/api/users/${taskResponse2.userId}/tasks`)
+              .then((res) => {
+                // 1 if successful (number of rows updated)
+                expect(res.body.length).to.eql(2);
+                done();
+              })
+              .catch(err => {
+                console.log(err);
+                expect(err).to.eql(null); // indicative of failure
+                done();
+              })
+          })
+          .catch(err => {
+            console.log(err);
+            expect(err).to.eql(null); // indicative of failure
+            done();
+          })
         .catch(err => {
           console.log(err);
           expect(err).to.eql(null); // indicative of failure

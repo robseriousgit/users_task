@@ -1,7 +1,8 @@
 
-# Code Sample: Search Endpoint
+# Code Sample: User / Task Endpoint
 
 ## General
+
 
 
 ## Search priority
@@ -25,3 +26,4 @@ TODO:
 - refactor test
 - add cron job
 - add default state for tasks
+- clean up old unit tests
