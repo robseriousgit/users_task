@@ -1,6 +1,7 @@
 import restify from 'restify';
-//import db from './util/db';
 import route from './route';
+import cron from 'node-cron';
+import { updateScheduledTasks } from './util/taskManager'
 
 const {
   PORT = '1234'
@@ -13,6 +14,12 @@ route(server);
 
 server.listen(parseInt(PORT, 10), () => {
   console.log(`${server.name} listening at ${server.url}`);
+});
+
+// cron set to run every minute
+cron.schedule('* * * * *', () => {
+  console.log('Running scheduled job');
+  updateScheduledTasks();
 });
 
 export default server;

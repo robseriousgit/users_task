@@ -1,4 +1,4 @@
-const models  = require('../../models');
+import models from '../../models'
 
 // note: no req'd fields provided so assuming all are req'd
 const validUser = params => (
@@ -12,7 +12,6 @@ export const createUser = (req, res, next) => {
     res.send(400, 'Invalid user creation request');
     next();
   } else {
-    // note: sequelize handles escaping so no need to protect against SQL injection
     models.User.create(
       { 
         username: req.params.username,

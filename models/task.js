@@ -3,7 +3,7 @@ module.exports = (sequelize, DataTypes) => {
   var Task = sequelize.define('Task', {
     name: DataTypes.STRING,
     description: DataTypes.STRING,
-    status: DataTypes.STRING,
+    status: { type: DataTypes.STRING, defaultValue: 'pending'},
     date_time: DataTypes.DATE,
     next_execute_date_time: DataTypes.DATE
   }, {});

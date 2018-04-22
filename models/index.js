@@ -1,3 +1,5 @@
+// Note: could refactor this code, default sequelize setup
+
 'use strict';
 
 var fs        = require('fs');

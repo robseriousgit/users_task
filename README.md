@@ -3,9 +3,8 @@
 
 ## General
 
+Requres MySQL running, default user (root) password (null) connection
 
-
-## Search priority
 
 /**
 Create local db: blackswan_development 
@@ -23,7 +22,33 @@ Create local db: blackswan_development
 
 TODO:
 
-- refactor test
-- add cron job
 - add default state for tasks
+- add cron job
 - clean up old unit tests
+- readme
+
+
+// note: sequelize handles escaping so no need to protect against SQL injection
+    
+## Setup
+
+Requres MySQL running, default user (root) password (null) connection, or edit in `/config/config.json`
+
+```sh
+npm install
+node_modules/.bin/sequelize db:migrate
+```
+
+## Test
+
+```sh
+npm test
+```
+
+### Run
+
+```sh
+npm start
+```
+
+Included is a Postman collection to check all User / Task endpoints

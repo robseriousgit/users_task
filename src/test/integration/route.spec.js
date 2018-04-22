@@ -1,37 +1,8 @@
 import { expect } from 'chai';
 import request from 'supertest';
+import models from '../../../models'
 import server from '../../../lib/index'
-
-const models = require('../../../models');
-
-const generateUser = () => {
-  return new Promise((resolve, reject) => {
-    models.User.create(
-      { 
-        username: 'testUser', 
-        first_name: 'first_name', 
-        last_name: 'last_nae'
-      }
-    ).then((user) => {
-      resolve(user.id);
-    })
-  })
-}
-
-const generateTask = (userId) => {
-  return new Promise((resolve, reject) => {
-    models.Task.create(
-      {
-        "name":"My task",
-        "description" : "Description of task", 
-        "date_time" : "2016-05-25 14:25:00",
-        "UserId": userId
-      })
-    .then((task) => {
-      resolve({taskId: task.id, userId} );
-    })
-  })
-}
+import { generateTask, generateUser, destroyFixtureData } from '../util/dbFixtures'
 
 describe('Health check route', () => {
   it('returns ok', () => {
@@ -264,6 +235,7 @@ describe('Task routes', () => {
     generateUser()
       .then(generateTask)  
       .then((taskResponse) => {
+        // messy nested prmomise, but 
         generateTask(taskResponse.userId)
           .then(taskResponse2 => {
             request(server)
@@ -298,15 +270,6 @@ describe('Task routes', () => {
   });
 
   after(() => {
-    models.Task.destroy({
-      where: {
-        description: 'Description of task'
-      }
-    });
-    models.User.destroy({
-      where: {
-        username: 'testUser'
-      }
-    });
-  });
+    destroyFixtureData();
+  })
 });

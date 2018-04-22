@@ -1,4 +1,4 @@
-const models  = require('../../models');
+import models from '../../models'
 
 export const validTask = params => (
   (typeof params.name === 'undefined' 
@@ -7,7 +7,6 @@ export const validTask = params => (
 )
 
 export const createTask = (req, res, next) => {
-  // note: error handle to check if user exists
   if (!validTask(req.params)) {
     res.send(400, 'Invalid task creation request');
     next();
@@ -17,10 +16,11 @@ export const createTask = (req, res, next) => {
         name: req.params.name,
         description: req.params.description,
         date_time: req.params.date_time,
-        UserId: req.params.userId
+        UserId: req.params.userId,
+        // this I am electing to be optional
+        next_execute_date_time: (typeof req.params.next_execute_date_time !== 'undefined') ? req.params.next_execute_date_time : null
       }
     ).then(task => {
-      console.log('created a task')
       res.send(200, task)
     })
     .catch(err =>
