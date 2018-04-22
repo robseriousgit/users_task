@@ -235,7 +235,7 @@ describe('Task routes', () => {
     generateUser()
       .then(generateTask)  
       .then((taskResponse) => {
-        // messy nested prmomise, but 
+        // messy nested prmomise, but we need a second task created
         generateTask(taskResponse.userId)
           .then(taskResponse2 => {
             request(server)
