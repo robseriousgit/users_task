@@ -1,6 +1,6 @@
 {
 	"info": {
-		"name": "blackswan_user_manager",
+		"name": "bs_user_manager",
 		"_postman_id": "f39bb6ac-94da-67ff-fa5c-d074bd6f87d0",
 		"description": "Test endpoints for User / Task manager app",
 		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
