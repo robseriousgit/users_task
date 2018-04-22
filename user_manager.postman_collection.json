@@ -10,29 +10,15 @@
 			"name": "Create User",
 			"request": {
 				"method": "POST",
-				"header": [],
+				"header": [
+					{
+						"key": "Content-Type",
+						"value": "application/json"
+					}
+				],
 				"body": {
-					"mode": "formdata",
-					"formdata": [
-						{
-							"key": "username",
-							"value": "jsmith",
-							"description": "",
-							"type": "text"
-						},
-						{
-							"key": "first_name",
-							"value": "John",
-							"description": "",
-							"type": "text"
-						},
-						{
-							"key": "last_name",
-							"value": "Smith",
-							"description": "",
-							"type": "text"
-						}
-					]
+					"mode": "raw",
+					"raw": "{\"username\":\"jsmith\",\"first_name\" : \"John\", \"last_name\" : \"Smith2\"}"
 				},
 				"url": {
 					"raw": "http://localhost:1234/api/users/",
@@ -55,34 +41,18 @@
 			"name": "Update User",
 			"request": {
 				"method": "PUT",
-				"header": [],
+				"header": [
+					{
+						"key": "Content-Type",
+						"value": "application/json"
+					}
+				],
 				"body": {
-					"mode": "formdata",
-					"formdata": [
-						{
-							"key": "username",
-							"value": "jsmith",
-							"description": "",
-							"type": "text",
-							"disabled": true
-						},
-						{
-							"key": "first_name",
-							"value": "James",
-							"description": "",
-							"type": "text"
-						},
-						{
-							"key": "last_name",
-							"value": "Smith",
-							"description": "",
-							"type": "text",
-							"disabled": true
-						}
-					]
+					"mode": "raw",
+					"raw": "{\"first_name\" : \"John\", \"last_name\" : \"Doe\"}"
 				},
 				"url": {
-					"raw": "http://localhost:1234/api/users/191",
+					"raw": "http://localhost:1234/api/users/21",
 					"protocol": "http",
 					"host": [
 						"localhost"
@@ -91,7 +61,7 @@
 					"path": [
 						"api",
 						"users",
-						"191"
+						"21"
 					]
 				},
 				"description": "Helps to create user then use the ID"
@@ -243,38 +213,18 @@
 			"name": "Create Task",
 			"request": {
 				"method": "POST",
-				"header": [],
+				"header": [
+					{
+						"key": "Content-Type",
+						"value": "application/json"
+					}
+				],
 				"body": {
-					"mode": "formdata",
-					"formdata": [
-						{
-							"key": "name",
-							"value": "My task",
-							"description": "",
-							"type": "text"
-						},
-						{
-							"key": "description",
-							"value": "Description of task",
-							"description": "",
-							"type": "text"
-						},
-						{
-							"key": "date_time",
-							"value": "2016-05-25 14:25:00",
-							"description": "",
-							"type": "text"
-						},
-						{
-							"key": "next_execute_date_time",
-							"value": "2016-05-25 14:25:00",
-							"description": "",
-							"type": "text"
-						}
-					]
+					"mode": "raw",
+					"raw": "{\"name\":\"My task\",\"description\" : \"Description of task2\", \"date_time\" : \"2016-05-25 14:25:00\", \"next_execute_date_time\": \"2016-05-25 14:25:00\"}"
 				},
 				"url": {
-					"raw": "http://localhost:1234/api/users/192/tasks",
+					"raw": "http://localhost:1234/api/users/21/tasks",
 					"protocol": "http",
 					"host": [
 						"localhost"
@@ -283,7 +233,7 @@
 					"path": [
 						"api",
 						"users",
-						"192",
+						"21",
 						"tasks"
 					]
 				},
@@ -295,20 +245,18 @@
 			"name": "Update Task",
 			"request": {
 				"method": "PUT",
-				"header": [],
+				"header": [
+					{
+						"key": "Content-Type",
+						"value": "application/json"
+					}
+				],
 				"body": {
-					"mode": "formdata",
-					"formdata": [
-						{
-							"key": "description",
-							"value": "Updated description",
-							"description": "",
-							"type": "text"
-						}
-					]
+					"mode": "raw",
+					"raw": "{\"name\":\"My updated task\", \"next_execute_date_time\": \"2016-05-25 13:25:00\", \"status\": \"pending\"}"
 				},
 				"url": {
-					"raw": "http://localhost:1234/api/users/192/tasks/143",
+					"raw": "http://localhost:1234/api/users/21/tasks/17",
 					"protocol": "http",
 					"host": [
 						"localhost"
@@ -317,9 +265,9 @@
 					"path": [
 						"api",
 						"users",
-						"192",
+						"21",
 						"tasks",
-						"143"
+						"17"
 					]
 				},
 				"description": ""
@@ -331,31 +279,7 @@
 			"request": {
 				"method": "DELETE",
 				"header": [],
-				"body": {
-					"mode": "formdata",
-					"formdata": [
-						{
-							"key": "username",
-							"value": "jsmith",
-							"description": "",
-							"type": "text",
-							"disabled": true
-						},
-						{
-							"key": "first_name",
-							"value": "James",
-							"description": "",
-							"type": "text"
-						},
-						{
-							"key": "last_name",
-							"value": "Smith",
-							"description": "",
-							"type": "text",
-							"disabled": true
-						}
-					]
-				},
+				"body": {},
 				"url": {
 					"raw": "http://localhost:1234/api/users/192/tasks/143",
 					"protocol": "http",
