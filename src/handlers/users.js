@@ -19,7 +19,6 @@ export const createUser = (req, res, next) => {
         last_name: req.params.last_name,
       }
     ).then(user => {
-      console.log('created a user')
       res.send(200, user)
     })
     .catch(err =>

@@ -1,4 +1,4 @@
-// Note: could refactor this code, default sequelize setup
+// Note: default sequelize setup
 
 'use strict';
 
